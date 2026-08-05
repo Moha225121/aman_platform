@@ -24,6 +24,12 @@ printf 'ServerName localhost\n' > /etc/apache2/conf-available/servername.conf
 a2enconf servername >/dev/null
 sed -i "s/^Listen .*/Listen ${APP_PORT}/" /etc/apache2/ports.conf
 
+# DigitalOcean may expose an attached database as DATABASE_URL. Laravel uses DB_URL.
+if [ -n "${DATABASE_URL:-}" ] && [ -z "${DB_URL:-}" ]; then
+    export DB_URL="$DATABASE_URL"
+    export DB_CONNECTION=pgsql
+fi
+
 # Allow a fresh App Platform service to boot before a managed database is attached.
 # SQLite is only a temporary fallback because the container filesystem is ephemeral.
 if [ -z "${DB_CONNECTION:-}" ] || [ "${DB_CONNECTION}" = "sqlite" ]; then

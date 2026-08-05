@@ -32,7 +32,7 @@ envs:
     value: pgsql
     scope: RUN_TIME
   - key: DB_URL
-    value: ${aman-db.DATABASE_PRIVATE_URL}
+    value: ${db.DATABASE_PRIVATE_URL}
     scope: RUN_TIME
   - key: SESSION_DRIVER
     value: database
@@ -76,7 +76,7 @@ jobs:
     run_command: php artisan migrate --force && php artisan db:seed --class=DatabaseSeeder --force && php artisan db:seed --class=KnowledgeBaseSeeder --force && php artisan db:seed --class=CounselorAccountsSeeder --force && php artisan rag:index
 
 databases:
-  - name: aman-db
+  - name: db
     engine: PG
     version: "17"
     production: false
