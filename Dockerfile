@@ -22,7 +22,6 @@ COPY . .
 COPY --from=composer_deps /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 RUN pip3 install --break-system-packages --no-cache-dir pypdf \
-    && sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf /etc/apache2/apache2.conf \
     && chown -R www-data:www-data storage bootstrap/cache
 COPY docker/entrypoint.sh /usr/local/bin/aman-entrypoint
 RUN chmod +x /usr/local/bin/aman-entrypoint
