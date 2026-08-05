@@ -1,6 +1,6 @@
 # نشر منصة أمان على DigitalOcean App Platform
 
-المشروع مجهز للنشر من GitHub باستخدام الملف `.do/app.yaml` وDockerfile. يستخدم PostgreSQL في الإنتاج، ويبني واجهة Vite داخل صورة Docker، ويشغّل migrations وبيانات البداية وفهرس RAG قبل كل نشر.
+المشروع مجهز للنشر من GitHub باستخدام الملف `.do/app.yaml` وDockerfile. يبني واجهة Vite داخل صورة Docker ويشغّل migrations وبيانات البداية عند التشغيل. ملف App Spec الحالي لا ينشئ قاعدة مدفوعة تلقائيًا، حتى يمكن نشره على الحسابات التي لا تسمح بإنشاء Dev Database.
 
 ## قبل إنشاء التطبيق
 
@@ -21,9 +21,9 @@
 
 1. اختر **Create > Apps** واربط حساب GitHub.
 2. اختر المستودع `Moha225121/aman_platform` والفرع `main`.
-3. استخدم App Spec الموجود في `.do/app.yaml`.
+3. استخدم App Spec الموجود في `.do/app.yaml`. يبدأ افتراضيًا بقاعدة SQLite مؤقتة.
 4. اجعل `APP_KEY` و`OPENAI_API_KEY` من نوع **Encrypted/Secret**.
-5. راجع تكلفة خدمة الويب وقاعدة PostgreSQL قبل تأكيد الإنشاء.
+5. راجع تكلفة خدمة الويب قبل تأكيد الإنشاء.
 
 إذا أنشأت الخدمة يدويًا بدل استيراد App Spec، اربط قاعدة PostgreSQL باسم `db` واضبط `DB_CONNECTION=pgsql` و`DB_URL=${db.DATABASE_PRIVATE_URL}`. يدعم المشروع أيضًا `DATABASE_URL` تلقائيًا. يعمل مؤقتًا بـSQLite عند غياب هذه القيم، لكن بيانات SQLite داخل الحاوية قد تُفقد عند إعادة النشر أو إعادة التشغيل.
 

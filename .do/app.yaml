@@ -28,12 +28,6 @@ envs:
   - key: LOG_CHANNEL
     value: stderr
     scope: RUN_TIME
-  - key: DB_CONNECTION
-    value: pgsql
-    scope: RUN_TIME
-  - key: DB_URL
-    value: ${db.DATABASE_PRIVATE_URL}
-    scope: RUN_TIME
   - key: SESSION_DRIVER
     value: database
     scope: RUN_TIME
@@ -64,21 +58,3 @@ services:
       - path: /
     health_check:
       http_path: /
-
-jobs:
-  - name: database-setup
-    github:
-      repo: Moha225121/aman_platform
-      branch: main
-    dockerfile_path: Dockerfile
-    kind: PRE_DEPLOY
-    instance_size_slug: apps-s-1vcpu-1gb
-    run_command: php artisan migrate --force && php artisan db:seed --class=DatabaseSeeder --force && php artisan db:seed --class=KnowledgeBaseSeeder --force && php artisan db:seed --class=CounselorAccountsSeeder --force && php artisan rag:index
-
-databases:
-  - name: db
-    engine: PG
-    version: "17"
-    production: false
-    db_name: aman
-    db_user: aman
