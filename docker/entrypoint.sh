@@ -30,6 +30,19 @@ if [ -n "${DATABASE_URL:-}" ] && [ -z "${DB_URL:-}" ]; then
     export DB_CONNECTION=pgsql
 fi
 
+# An unresolved App Platform binding such as {db.DATABASE_URL} is not a URL.
+# Do not let it stop the container before the web server starts.
+if [ "${DB_CONNECTION:-}" = "pgsql" ]; then
+    case "${DB_URL:-}" in
+        postgres://*|postgresql://*) ;;
+        *)
+            echo "WARNING: PostgreSQL is selected but DB_URL is missing or unresolved; using temporary SQLite."
+            unset DB_URL DATABASE_URL
+            export DB_CONNECTION=sqlite
+            ;;
+    esac
+fi
+
 # Allow a fresh App Platform service to boot before a managed database is attached.
 # SQLite is only a temporary fallback because the container filesystem is ephemeral.
 if [ -z "${DB_CONNECTION:-}" ] || [ "${DB_CONNECTION}" = "sqlite" ]; then
