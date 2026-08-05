@@ -46,6 +46,9 @@ envs:
   - key: PDF_PYTHON_BINARY
     value: python3
     scope: RUN_TIME
+  - key: AMAN_SEED_DATABASE
+    value: "true"
+    scope: RUN_TIME
 
 services:
   - name: web

@@ -2,6 +2,8 @@
 set -e
 
 APP_PORT="${PORT:-8080}"
+export APP_ENV=production
+export APP_DEBUG=false
 cat > /etc/apache2/sites-available/000-default.conf <<EOF
 <VirtualHost *:${APP_PORT}>
     ServerName localhost
@@ -21,6 +23,23 @@ EOF
 printf 'ServerName localhost\n' > /etc/apache2/conf-available/servername.conf
 a2enconf servername >/dev/null
 sed -i "s/^Listen .*/Listen ${APP_PORT}/" /etc/apache2/ports.conf
+
+# Allow a fresh App Platform service to boot before a managed database is attached.
+# SQLite is only a temporary fallback because the container filesystem is ephemeral.
+if [ -z "${DB_CONNECTION:-}" ] || [ "${DB_CONNECTION}" = "sqlite" ]; then
+    export DB_CONNECTION=sqlite
+    export DB_DATABASE=/var/www/html/database/database.sqlite
+    mkdir -p /var/www/html/database
+    touch "$DB_DATABASE"
+    chown www-data:www-data "$DB_DATABASE" /var/www/html/database
+fi
+
+php artisan migrate --force
+if [ "${AMAN_SEED_DATABASE:-true}" = "true" ]; then
+    php artisan db:seed --class=DatabaseSeeder --force
+    php artisan db:seed --class=KnowledgeBaseSeeder --force
+    php artisan db:seed --class=CounselorAccountsSeeder --force
+fi
 php artisan storage:link 2>/dev/null || true
 php artisan config:cache
 php artisan route:cache
