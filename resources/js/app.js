@@ -151,3 +151,7 @@ qa('.booking-trigger').forEach(button => button.onclick = () => {
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') { closeAuth(); closePolicy(); panel.classList.remove('open'); }
 });
+
+const requestedAuth = new URLSearchParams(window.location.search).get('auth');
+if (requestedAuth === 'login') openAuth('login');
+if (requestedAuth === 'register') openPolicy();

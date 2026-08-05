@@ -10,6 +10,9 @@ Route::get('/', fn () => view('welcome', [
     'programs' => Schema::hasTable('support_programs') ? SupportProgram::where('active', true)->get() : collect(),
     'counselors' => Schema::hasTable('counselors') ? Counselor::where('active', true)->get() : collect(),
 ]));
+Route::get('/login', fn () => redirect('/?auth=login'));
+Route::get('/register', fn () => redirect('/?auth=register'));
+Route::get('/logout', fn () => redirect('/'));
 Route::post('/register', [AuthController::class,'register'])->name('register');
 Route::post('/login', [AuthController::class,'login'])->name('login');
 Route::post('/logout', [AuthController::class,'logout'])->middleware('auth')->name('logout');
