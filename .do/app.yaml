@@ -1,0 +1,81 @@
+name: aman-platform
+region: fra
+
+envs:
+  - key: APP_ENV
+    value: production
+    scope: RUN_TIME
+  - key: APP_DEBUG
+    value: "false"
+    scope: RUN_TIME
+  - key: APP_URL
+    value: ${APP_URL}
+    scope: RUN_TIME
+  - key: APP_KEY
+    value: REPLACE_WITH_GENERATED_APP_KEY
+    type: SECRET
+    scope: RUN_TIME
+  - key: OPENAI_API_KEY
+    value: REPLACE_WITH_OPENAI_API_KEY
+    type: SECRET
+    scope: RUN_TIME
+  - key: OPENAI_MODEL
+    value: gpt-5.6-sol
+    scope: RUN_TIME
+  - key: OPENAI_EMBEDDING_MODEL
+    value: text-embedding-3-small
+    scope: RUN_TIME
+  - key: LOG_CHANNEL
+    value: stderr
+    scope: RUN_TIME
+  - key: DB_CONNECTION
+    value: pgsql
+    scope: RUN_TIME
+  - key: DB_URL
+    value: ${aman-db.DATABASE_PRIVATE_URL}
+    scope: RUN_TIME
+  - key: SESSION_DRIVER
+    value: database
+    scope: RUN_TIME
+  - key: CACHE_STORE
+    value: database
+    scope: RUN_TIME
+  - key: QUEUE_CONNECTION
+    value: database
+    scope: RUN_TIME
+  - key: PDF_PYTHON_BINARY
+    value: python3
+    scope: RUN_TIME
+
+services:
+  - name: web
+    github:
+      repo: Moha225121/aman_platform
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    routes:
+      - path: /
+    health_check:
+      http_path: /
+
+jobs:
+  - name: database-setup
+    github:
+      repo: Moha225121/aman_platform
+      branch: main
+    dockerfile_path: Dockerfile
+    kind: PRE_DEPLOY
+    instance_size_slug: apps-s-1vcpu-1gb
+    run_command: php artisan migrate --force && php artisan db:seed --class=DatabaseSeeder --force && php artisan db:seed --class=KnowledgeBaseSeeder --force && php artisan db:seed --class=CounselorAccountsSeeder --force && php artisan rag:index
+
+databases:
+  - name: aman-db
+    engine: PG
+    version: "17"
+    production: false
+    db_name: aman
+    db_user: aman
