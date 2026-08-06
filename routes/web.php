@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{AdminController,AuthController,BookingController,CompanionController,CounselorController};
+use App\Http\Controllers\{AdminController,AuthController,BookingController,BookingChatController,CompanionController,CounselorController};
 use App\Models\{Counselor,Service,SupportProgram};
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +23,11 @@ Route::get('/dashboard', fn () => view('dashboard',[
     'programs'=>SupportProgram::where('active',true)->get(),
 ]))->middleware('auth')->name('dashboard');
 Route::post('/bookings',[BookingController::class,'store'])->middleware('auth')->name('bookings.store');
+Route::middleware('auth')->group(function () {
+    Route::get('/bookings/{booking}/chat',[BookingChatController::class,'show'])->name('bookings.chat');
+    Route::get('/bookings/{booking}/messages',[BookingChatController::class,'messages'])->name('bookings.messages');
+    Route::post('/bookings/{booking}/messages',[BookingChatController::class,'store'])->middleware('throttle:30,1')->name('bookings.messages.store');
+});
 Route::post('/companion/message',[CompanionController::class,'message'])->middleware(['auth','throttle:20,1'])->name('companion.message');
 Route::get('/counselor',[CounselorController::class,'dashboard'])->middleware('auth')->name('counselor.dashboard');
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function(){

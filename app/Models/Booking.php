@@ -10,4 +10,5 @@ class Booking extends Model
     public function counselor(){return $this->belongsTo(Counselor::class);}
     public function service(){return $this->belongsTo(Service::class);}
     public function supportProgram(){return $this->belongsTo(SupportProgram::class);}
+    public function messages(){return $this->hasMany(BookingMessage::class);}
 }

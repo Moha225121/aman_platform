@@ -12,9 +12,11 @@ class AdminController extends Controller
         $this->authorizeAdmin();
         $data=$request->validate([
             'status'=>'required|in:pending,accepted,completed,cancelled','scheduled_at'=>'nullable|date',
+            'counselor_id'=>'nullable|exists:counselors,id',
             'meeting_url'=>['nullable','url:http,https','max:1000','regex:#^https://meet\.google\.com/[a-z0-9-]+(?:\?.*)?$#i'],
             'location_url'=>['nullable','url:http,https','max:1000'],
         ]);
+        if($data['status']==='accepted' && empty($data['counselor_id'])) throw \Illuminate\Validation\ValidationException::withMessages(['counselor_id'=>'اختر المرشد قبل تأكيد الحجز لفتح المحادثة للطرفين.']);
         if($data['status']==='accepted' && $booking->session_method==='online' && empty($data['meeting_url'])) throw \Illuminate\Validation\ValidationException::withMessages(['meeting_url'=>'أضف رابط Google Meet قبل تأكيد الحجز الأونلاين.']);
         if($data['status']==='accepted' && $booking->session_method==='in_person' && empty($data['location_url'])) throw \Illuminate\Validation\ValidationException::withMessages(['location_url'=>'أضف رابط موقع الجلسة قبل تأكيد الحجز الحضوري.']);
         if($booking->session_method==='online')$data['location_url']=null;else $data['meeting_url']=null;
