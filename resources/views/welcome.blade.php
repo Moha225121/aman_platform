@@ -16,7 +16,7 @@
                 <img class="brand-logo" src="{{ asset('images/aman/logo.png') }}" alt="شعار منصة أمان"><span><strong>أمان</strong><small>SAFETY</small></span>
             </a>
             <nav class="desktop-nav" aria-label="التنقل الرئيسي">
-                <a href="#consultations">خدماتنا</a><a href="#support-programs">برامج الدعم</a><a href="#available-counselors">المرشدون</a><a href="#about">عن أمان</a>
+                <a href="#services">خدماتنا</a><a href="#programs">برامج الدعم</a><a href="#about">عن أمان</a>
             </nav>
             <div class="nav-actions">
                 <button class="btn btn-ghost login-trigger">تسجيل الدخول</button>
@@ -24,7 +24,7 @@
                 <button class="menu-btn" aria-label="فتح القائمة" aria-expanded="false">☰</button>
             </div>
         </div>
-        <div class="mobile-nav"><a href="#consultations">خدماتنا</a><a href="#support-programs">برامج الدعم</a><a href="#available-counselors">المرشدون</a><a href="#about">عن أمان</a></div>
+        <div class="mobile-nav"><a href="#services">خدماتنا</a><a href="#programs">برامج الدعم</a><a href="#about">عن أمان</a></div>
     </header>
 
     <main id="top">
@@ -35,7 +35,7 @@
                     <div class="eyebrow"><span>●</span> مساحة آمنة، لك أنت</div>
                     <h1>لست وحدك.<br><em>ابدأ من هنا.</em></h1>
                     <p>مساحة ليبية آمنة وهادئة تساعدك على فهم ما تمرّ به، والتحدث بحرية، والوصول إلى الدعم المناسب — دون الحاجة للكشف عن هويتك.</p>
-                    <div class="hero-actions"><button class="btn btn-primary btn-large chat-trigger">تحدّث مع رفيق أمان <span>←</span></button><a class="btn btn-light btn-large" href="#available-counselors">تصفّح المرشدين</a></div>
+                    <div class="hero-actions"><button class="btn btn-primary btn-large chat-trigger">تحدّث مع رفيق أمان <span>←</span></button><button class="btn btn-light btn-large booking-trigger">تصفّح المرشدين</button></div>
                     <div class="trust-row"><span>◉ خصوصية كاملة</span><span>◷ متاح في أي وقت</span><span>♙ مرشدون موثوقون</span></div>
                 </div>
                 <div class="companion-stage"><img class="companion-person" src="{{ asset('images/aman/companion-welcome.png') }}" alt="رفيق أمان يرحب بك"><div class="companion-card">
@@ -56,7 +56,7 @@
             <div class="container"><div class="section-heading"><span>كيف نساعدك؟</span><h2>الدعم الذي تحتاجه، بالطريقة التي تناسبك</h2><p>ابدأ بخطوة بسيطة، واترك لنا مساعدتك في الوصول إلى المسار الأنسب.</p></div>
                 <div class="service-grid">
                     <article class="service-card featured"><div class="service-icon">✦</div><small>ابدأ الآن</small><h3>رفيق أمان الذكي</h3><p>تحدث بحرية وفي أي وقت. يساعدك رفيق أمان على فهم احتياجك واقتراح خطوتك التالية.</p><button class="text-link chat-trigger">ابدأ محادثة ←</button></article>
-                    <article class="service-card"><div class="service-icon">♙</div><h3>جلسات إرشادية</h3><p>اختر مرشدًا متخصصًا واحجز جلستك النصية أو الصوتية أو المرئية بخصوصية.</p><a class="text-link" href="#guides">اختر مرشدك ←</a></article>
+                    <article class="service-card"><div class="service-icon">♙</div><h3>جلسات إرشادية</h3><p>اختر مرشدًا متخصصًا واحجز جلستك النصية أو الصوتية أو المرئية بخصوصية.</p><button class="text-link booking-trigger">اختر مرشدك ←</button></article>
                     <article class="service-card"><div class="service-icon">◫</div><h3>برامج دعم متخصصة</h3><p>مسارات عملية للأفراد والأزواج والأسر، مصممة لمرافقتك خطوة بخطوة.</p><a class="text-link" href="#programs">اكتشف البرامج ←</a></article>
                 </div>
             </div>
@@ -65,11 +65,6 @@
         <section class="section soft" id="programs"><div class="container split"><div><span class="kicker">أمان لكل مرحلة</span><h2>مهما كان ما تمرّ به، هناك مساحة تفهمك</h2><p>برامجنا تراعي الإنسان والأسرة والسياق الاجتماعي الليبي، وتمنحك دعمًا عمليًا بعيدًا عن الوصم والأحكام.</p><a class="btn btn-primary" href="#services">استكشف كل البرامج</a></div><div class="topic-grid"><div><span>☁</span><b>القلق والضغوط</b><small>فهم المشاعر واستعادة التوازن</small></div><div><span>♡</span><b>الإرشاد الزوجي</b><small>مساحة آمنة للحوار والتفاهم</small></div><div><span>⌂</span><b>الدعم الأسري</b><small>تحديات التربية والعلاقات</small></div><div><span>✿</span><b>دعم الأمهات</b><small>قبل الولادة وبعدها</small></div></div></div></section>
 
         <section class="privacy" id="about"><div class="container privacy-grid"><div class="shield">⌾</div><div><span class="kicker light">خصوصيتك أولًا</span><h2>هويتك تبقى لك</h2><p>لا نطلب اسمك الحقيقي أو رقم هاتفك أو بريدك الإلكتروني. تنشئ اسمًا مستعارًا، ونمنحك اسم مستخدم فريدًا للعودة إلى حسابك ومتابعة رحلتك بأمان.</p><div class="privacy-points"><span>✓ كلمات مرور مشفّرة</span><span>✓ أقل قدر من البيانات</span><span>✓ حذف حسابك متى شئت</span></div></div><button class="btn btn-white register-trigger">أنشئ حسابك المجهول</button></div></section>
-        <section class="consultations" id="consultations"><div class="container"><div class="section-heading"><span>الاستشارات المتاحة</span><h2>تخصصات تفهم ما تمرّ به</h2><p>اختر المجال الأقرب لاحتياجك، وسنساعدك في الوصول إلى المرشد المناسب بسرية واهتمام.</p></div><div class="consultation-grid">@foreach($services as $service)<article><i>{{ mb_substr($service->name,0,1) }}</i><h3>{{ $service->name }}</h3><p>{{ $service->description }}</p><button class="consultation-more booking-trigger" data-service="{{ $service->id }}">اعرف أكثر</button></article>@endforeach</div></div></section>
-
-        <section class="support-programs" id="support-programs"><div class="container"><div class="section-heading"><span>رعاية تناسب احتياجك</span><h2>برامج دعم متخصصة</h2><p>برامج عملية ترافق الفرد والأسرة خلال المراحل والتحديات المختلفة.</p></div><div class="program-grid">@foreach($programs as $program)<article><i>{{ mb_substr($program->name,7,1) }}</i><h3>{{ $program->name }}</h3><p>{{ $program->description }}</p><button class="program-action booking-trigger" data-program="{{ $program->id }}">اطلب الانضمام</button></article>@endforeach</div></div></section>
-
-        <section class="real-counselors" id="available-counselors"><div class="container"><div class="section-heading"><span>فريق أمان</span><h2>أخصائيون ومرشدون نفسيون</h2><p>كل شخصية في هذا البروتوتايب تحمل نفس الوظيفة داخل أمان: أخصائي ومرشد نفسي.</p></div><div class="real-counselor-grid">@foreach($counselors as $counselor)<article><div class="initials">{{ collect(explode(' ',$counselor->name))->map(fn($p)=>mb_substr($p,0,1))->take(2)->join(' ') }}</div><div class="stars">★★★★★</div><h3>{{ $counselor->name }}</h3><p>{{ $counselor->title }}</p><span>{{ $counselor->specialties }}</span><button class="booking-trigger" data-counselor="{{ $counselor->id }}">احجز جلسة</button></article>@endforeach</div></div></section>
     </main>
 
     <footer><div class="container footer-grid"><div class="brand footer-brand"><img class="brand-logo" src="{{ asset('images/aman/logo.png') }}" alt="شعار أمان"><span><strong>أمان</strong><small>SAFETY</small></span></div><p>الفهم بداية التغيير</p><div><a href="#services">الخدمات</a><a href="#programs">البرامج</a><button class="footer-policy policy-trigger">سياسة الخصوصية والأمان</button></div><small>© {{ date('Y') }} منصة أمان. جميع الحقوق محفوظة.</small></div></footer>
