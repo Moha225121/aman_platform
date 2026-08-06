@@ -29,7 +29,7 @@ envs:
     value: stderr
     scope: RUN_TIME
   - key: SESSION_DRIVER
-    value: file
+    value: cookie
     scope: RUN_TIME
   - key: CACHE_STORE
     value: file
