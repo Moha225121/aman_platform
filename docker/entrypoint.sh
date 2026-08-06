@@ -48,9 +48,13 @@ fi
 if [ -z "${DB_CONNECTION:-}" ] || [ "${DB_CONNECTION}" = "sqlite" ]; then
     export DB_CONNECTION=sqlite
     export DB_DATABASE=/var/www/html/database/database.sqlite
+    export SESSION_DRIVER=file
+    export CACHE_STORE=file
+    export QUEUE_CONNECTION=sync
     mkdir -p /var/www/html/database
+    mkdir -p /var/www/html/storage/framework/sessions
     touch "$DB_DATABASE"
-    chown www-data:www-data "$DB_DATABASE" /var/www/html/database
+    chown -R www-data:www-data "$DB_DATABASE" /var/www/html/database /var/www/html/storage
 fi
 
 php artisan migrate --force

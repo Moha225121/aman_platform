@@ -29,13 +29,13 @@ envs:
     value: stderr
     scope: RUN_TIME
   - key: SESSION_DRIVER
-    value: database
+    value: file
     scope: RUN_TIME
   - key: CACHE_STORE
-    value: database
+    value: file
     scope: RUN_TIME
   - key: QUEUE_CONNECTION
-    value: database
+    value: sync
     scope: RUN_TIME
   - key: PDF_PYTHON_BINARY
     value: python3
