@@ -30,15 +30,23 @@ if [ -n "${DATABASE_URL:-}" ] && [ -z "${DB_URL:-}" ]; then
     export DB_CONNECTION=pgsql
 fi
 
-# An unresolved App Platform binding such as {db.DATABASE_URL} is not a URL.
-# Do not let it stop the container before the web server starts.
+# Production must never silently fall back to container-local SQLite: its users and
+# sessions disappear on the next deployment. DigitalOcean can provide either a URL
+# or discrete connection parameters, so accept both binding formats.
 if [ "${DB_CONNECTION:-}" = "pgsql" ]; then
     case "${DB_URL:-}" in
         postgres://*|postgresql://*) ;;
         *)
-            echo "WARNING: PostgreSQL is selected but DB_URL is missing or unresolved; using temporary SQLite."
-            unset DB_URL DATABASE_URL
-            export DB_CONNECTION=sqlite
+            if [ -n "${DB_HOST:-}" ] && [ -n "${DB_PORT:-}" ] && \
+               [ -n "${DB_DATABASE:-}" ] && [ -n "${DB_USERNAME:-}" ] && \
+               [ -n "${DB_PASSWORD:-}" ]; then
+                # Ignore an unresolved URL binding and let Laravel use the fields.
+                unset DB_URL DATABASE_URL
+            else
+                echo "ERROR: PostgreSQL connection variables are missing or unresolved." >&2
+                echo "Attach the DigitalOcean database component as 'db' and expose its bindable variables." >&2
+                exit 1
+            fi
             ;;
     esac
 fi
