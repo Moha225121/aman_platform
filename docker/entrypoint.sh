@@ -34,21 +34,22 @@ fi
 # sessions disappear on the next deployment. DigitalOcean can provide either a URL
 # or discrete connection parameters, so accept both binding formats.
 if [ "${DB_CONNECTION:-}" = "pgsql" ]; then
-    case "${DB_URL:-}" in
-        postgres://*|postgresql://*) ;;
-        *)
-            if [ -n "${DB_HOST:-}" ] && [ -n "${DB_PORT:-}" ] && \
-               [ -n "${DB_DATABASE:-}" ] && [ -n "${DB_USERNAME:-}" ] && \
-               [ -n "${DB_PASSWORD:-}" ]; then
-                # Ignore an unresolved URL binding and let Laravel use the fields.
-                unset DB_URL DATABASE_URL
-            else
+    if [ -n "${DB_HOST:-}" ] && [ -n "${DB_PORT:-}" ] && \
+       [ -n "${DB_DATABASE:-}" ] && [ -n "${DB_USERNAME:-}" ] && \
+       [ -n "${DB_PASSWORD:-}" ]; then
+        # Prefer discrete fields. This also avoids URL parsing failures when a
+        # generated URI contains encoded or invisible control characters.
+        unset DB_URL DATABASE_URL
+    else
+        case "${DB_URL:-}" in
+            postgres://*|postgresql://*) ;;
+            *)
                 echo "ERROR: PostgreSQL connection variables are missing or unresolved." >&2
                 echo "Attach the DigitalOcean database component as 'db' and expose its bindable variables." >&2
                 exit 1
-            fi
-            ;;
-    esac
+                ;;
+        esac
+    fi
 fi
 
 # Allow a fresh App Platform service to boot before a managed database is attached.
