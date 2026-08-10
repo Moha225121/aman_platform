@@ -24,6 +24,21 @@ printf 'ServerName localhost\n' > /etc/apache2/conf-available/servername.conf
 a2enconf servername >/dev/null
 sed -i "s/^Listen .*/Listen ${APP_PORT}/" /etc/apache2/ports.conf
 
+# Values pasted into App Platform can retain invisible line breaks. Normalize
+# URI environment variables before Laravel or Symfony attempts to parse them.
+if [ -n "${APP_URL:-}" ]; then
+    APP_URL="$(printf '%s' "$APP_URL" | tr -d '\r\n\t')"
+    export APP_URL
+fi
+if [ -n "${DATABASE_URL:-}" ]; then
+    DATABASE_URL="$(printf '%s' "$DATABASE_URL" | tr -d '\r\n\t')"
+    export DATABASE_URL
+fi
+if [ -n "${DB_URL:-}" ]; then
+    DB_URL="$(printf '%s' "$DB_URL" | tr -d '\r\n\t')"
+    export DB_URL
+fi
+
 # DigitalOcean may expose an attached database as DATABASE_URL. Laravel uses DB_URL.
 if [ -n "${DATABASE_URL:-}" ] && [ -z "${DB_URL:-}" ]; then
     export DB_URL="$DATABASE_URL"
