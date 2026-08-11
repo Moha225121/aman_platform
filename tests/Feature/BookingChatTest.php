@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Booking, Counselor, User};
+use App\Models\{Booking, BookingMessage, Counselor, User};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,5 +25,44 @@ class BookingChatTest extends TestCase
 
         $booking->update(['status'=>'pending']);
         $this->actingAs($client)->get(route('bookings.chat',$booking))->assertForbidden();
+    }
+
+    public function test_notifications_report_unread_messages_and_opening_chat_marks_them_read(): void
+    {
+        $client = User::factory()->create(['role' => 'user']);
+        $counselorUser = User::factory()->create(['role' => 'counselor']);
+        $counselor = Counselor::create([
+            'user_id' => $counselorUser->id,
+            'name' => 'Test counselor',
+            'title' => 'Counselor',
+            'rating' => 5,
+        ]);
+        $booking = Booking::create([
+            'user_id' => $client->id,
+            'counselor_id' => $counselor->id,
+            'status' => 'accepted',
+            'session_method' => 'online',
+        ]);
+        $message = BookingMessage::create([
+            'booking_id' => $booking->id,
+            'sender_id' => $counselorUser->id,
+            'body' => 'New message',
+        ]);
+
+        $this->actingAs($client)->getJson(route('chat.notifications'))
+            ->assertOk()
+            ->assertJsonPath('total', 1)
+            ->assertJsonPath("bookings.{$booking->id}", 1)
+            ->assertJsonPath('latest.id', $message->id)
+            ->assertJsonPath('latest.preview', 'New message');
+
+        $this->actingAs($client)->get(route('bookings.chat', $booking))->assertOk();
+        $this->assertNotNull($message->fresh()->read_at);
+
+        $this->actingAs($client)->getJson(route('chat.notifications'))
+            ->assertOk()
+            ->assertJsonPath('total', 0)
+            ->assertJsonPath("bookings.{$booking->id}", 0)
+            ->assertJsonPath('latest', null);
     }
 }

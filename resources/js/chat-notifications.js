@@ -29,7 +29,11 @@ if (chatLinks.length) {
     function showNotification(data) {
         if (!data.latest) return;
         const link = chatLinks.find(item => item.dataset.chatBooking === String(data.latest.booking_id));
-        toast.innerHTML = `<b>رسالة دردشة جديدة</b><span>${data.latest.preview}</span>`;
+        const title = document.createElement('b');
+        const preview = document.createElement('span');
+        title.textContent = 'رسالة دردشة جديدة';
+        preview.textContent = data.latest.preview;
+        toast.replaceChildren(title, preview);
         toast.onclick = () => { if (link) window.location.href = link.href; };
         toast.hidden = false;
         requestAnimationFrame(() => toast.classList.add('show'));
