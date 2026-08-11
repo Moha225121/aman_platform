@@ -36,6 +36,40 @@ class BookingChatController extends Controller
         return response()->json(['id' => $message->id], 201);
     }
 
+    public function notifications(Request $request)
+    {
+        $user = $request->user();
+        $query = Booking::query()->where('status', 'accepted');
+
+        if ($user->role === 'counselor') {
+            $query->whereHas('counselor', fn ($counselor) => $counselor->where('user_id', $user->id));
+        } else {
+            $query->where('user_id', $user->id);
+        }
+
+        $bookings = $query->withCount(['messages as unread_messages_count' => fn ($messages) => $messages
+            ->where('sender_id', '!=', $user->id)
+            ->whereNull('read_at')
+        ])->get(['id']);
+
+        $latestUnread = \App\Models\BookingMessage::query()
+            ->whereIn('booking_id', $bookings->pluck('id'))
+            ->where('sender_id', '!=', $user->id)
+            ->whereNull('read_at')
+            ->latest('id')
+            ->first(['id', 'booking_id', 'body']);
+
+        return response()->json([
+            'total' => $bookings->sum('unread_messages_count'),
+            'bookings' => $bookings->mapWithKeys(fn ($booking) => [$booking->id => $booking->unread_messages_count]),
+            'latest' => $latestUnread ? [
+                'id' => $latestUnread->id,
+                'booking_id' => $latestUnread->booking_id,
+                'preview' => mb_strimwidth($latestUnread->body, 0, 80, '…'),
+            ] : null,
+        ]);
+    }
+
     private function authorizeParticipant(Request $request, Booking $booking): void
     {
         $user = $request->user();

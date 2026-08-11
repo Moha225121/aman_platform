@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>مساحتي — أمان</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/chat-notifications.js'])
 </head>
 <body class="user-dashboard">
 @php
@@ -78,7 +78,7 @@
             <div class="booking-filters"><button class="active" data-filter="all">الكل <i>{{ $bookings->count() }}</i></button><button data-filter="pending">قيد المراجعة</button><button data-filter="accepted">مقبول</button><button data-filter="completed">مكتمل</button></div>
             <div class="booking-list">
             @forelse($bookings as $booking)
-                <article class="booking-item" data-status="{{ $booking->status }}"><div class="booking-number">#{{ $booking->id }}</div><div class="booking-info"><b>{{ $booking->service?->name ?? $booking->supportProgram?->name ?? 'طلب استشارة عامة' }}</b><small>{{ $booking->counselor?->name ?? 'سيتم اختيار المرشد الأنسب' }} · {{ $booking->created_at->translatedFormat('d M Y') }}</small>@if($booking->note)<p>{{ $booking->note }}</p>@endif @if($booking->status==='accepted')<div class="booking-links"><a class="session-link chat-session-link" href="{{ route('bookings.chat',$booking) }}">محادثة المرشد ←</a>@if($booking->meeting_url || $booking->location_url)<a class="session-link" href="{{ $booking->session_method==='online'?$booking->meeting_url:$booking->location_url }}" target="_blank" rel="noopener noreferrer">{{ $booking->session_method==='online'?'الانضمام عبر Google Meet':'عرض موقع الجلسة الحضورية' }} ↗</a>@endif</div>@endif</div><span class="status status-{{ $booking->status }}">{{ ['pending'=>'قيد المراجعة','accepted'=>'مقبول','completed'=>'مكتمل','cancelled'=>'ملغى'][$booking->status] }}</span></article>
+                <article class="booking-item" data-status="{{ $booking->status }}"><div class="booking-number">#{{ $booking->id }}</div><div class="booking-info"><b>{{ $booking->service?->name ?? $booking->supportProgram?->name ?? 'طلب استشارة عامة' }}</b><small>{{ $booking->counselor?->name ?? 'سيتم اختيار المرشد الأنسب' }} · {{ $booking->created_at->translatedFormat('d M Y') }}</small>@if($booking->note)<p>{{ $booking->note }}</p>@endif @if($booking->status==='accepted')<div class="booking-links"><a class="session-link chat-session-link" data-chat-booking="{{ $booking->id }}" href="{{ route('bookings.chat',$booking) }}">محادثة المرشد <span class="chat-unread-badge" @if(!$booking->unread_messages_count) hidden @endif>{{ $booking->unread_messages_count }}</span> ←</a>@if($booking->meeting_url || $booking->location_url)<a class="session-link" href="{{ $booking->session_method==='online'?$booking->meeting_url:$booking->location_url }}" target="_blank" rel="noopener noreferrer">{{ $booking->session_method==='online'?'الانضمام عبر Google Meet':'عرض موقع الجلسة الحضورية' }} ↗</a>@endif</div>@endif</div><span class="status status-{{ $booking->status }}">{{ ['pending'=>'قيد المراجعة','accepted'=>'مقبول','completed'=>'مكتمل','cancelled'=>'ملغى'][$booking->status] }}</span></article>
             @empty<div class="large-empty"><span>◫</span><h3>لا توجد طلبات حتى الآن</h3><p>ابدأ رحلتك بطلب استشارة آمنة وسرية.</p><button data-open-booking>احجز استشارتك الأولى</button></div>@endforelse
             </div>
         </section>
