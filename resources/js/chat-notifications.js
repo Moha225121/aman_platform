@@ -15,6 +15,41 @@ if (chatLinks.length) {
     toast.hidden = true;
     document.body.append(toast);
 
+    const notificationPanel = document.createElement('section');
+    notificationPanel.className = 'chat-notification-panel';
+    notificationPanel.hidden = true;
+    notificationPanel.setAttribute('aria-live', 'polite');
+    const dashboardAnchor = document.querySelector('.dashboard-content, .counselor-main > header');
+    if (dashboardAnchor) dashboardAnchor.insertAdjacentElement('afterbegin', notificationPanel);
+
+    function updateNotificationPanel(data) {
+        if (!dashboardAnchor) return;
+        const unreadLinks = chatLinks.filter(link => Number(data.bookings?.[link.dataset.chatBooking] || 0) > 0);
+        notificationPanel.hidden = unreadLinks.length === 0;
+        notificationPanel.replaceChildren();
+        if (!unreadLinks.length) return;
+
+        const heading = document.createElement('div');
+        const title = document.createElement('b');
+        const summary = document.createElement('span');
+        title.textContent = 'رسائل جديدة';
+        summary.textContent = `لديك ${data.total} رسالة غير مقروءة`;
+        heading.append(title, summary);
+        notificationPanel.append(heading);
+
+        unreadLinks.forEach(link => {
+            const count = Number(data.bookings[link.dataset.chatBooking]);
+            const item = document.createElement('a');
+            const label = document.createElement('span');
+            const badge = document.createElement('b');
+            item.href = link.href;
+            label.textContent = link.textContent.replace(/\d+/g, '').trim();
+            badge.textContent = String(count);
+            item.append(label, badge);
+            notificationPanel.append(item);
+        });
+    }
+
     function updateBadges(data) {
         chatLinks.forEach(link => {
             const count = Number(data.bookings?.[link.dataset.chatBooking] || 0);
@@ -24,6 +59,7 @@ if (chatLinks.length) {
             badge.hidden = count === 0;
         });
         document.title = data.total ? `(${data.total}) ${originalTitle}` : originalTitle;
+        updateNotificationPanel(data);
     }
 
     function showNotification(data) {
