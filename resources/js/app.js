@@ -117,18 +117,44 @@ qa('.moods button').forEach(button => button.onclick = () => {
     setTimeout(() => { addMessage('شكرًا لأنك شاركتني. هل ترغب أن تخبرني أكثر عما جعلك تشعر بهذا اليوم؟', 'bot'); setCompanionState('listening'); }, 1500);
 });
 const chatInput = q('.panel-input input');
+const chatForm = q('.panel-input');
+const chatSubmit = chatForm.querySelector('button');
+const companionHistory = [];
+let chatSending = false;
 chatInput.addEventListener('input', () => {
     clearTimeout(replyTimer);
     if (chatInput.value.trim()) setCompanionState('listening');
 });
 chatInput.addEventListener('focus', () => setCompanionState('listening'));
-q('.panel-input').onsubmit = event => {
+chatForm.onsubmit = async event => {
     event.preventDefault();
     const input = event.currentTarget.querySelector('input');
-    if (!input.value.trim()) return;
-    addMessage(input.value.trim(), 'user'); input.value = ''; setCompanionState('thinking');
-    setTimeout(() => setCompanionState('writing'), 900);
-    replyTimer = setTimeout(() => { addMessage('أنا معك. خذ وقتك في التعبير، وسنحاول معًا فهم الخطوة الأنسب لك.', 'bot'); setCompanionState('listening'); }, 1900);
+    const text = input.value.trim();
+    if (!text || chatSending) return;
+    chatSending = true;
+    chatSubmit.disabled = true;
+    addMessage(text, 'user');
+    input.value = '';
+    setCompanionState('thinking');
+    try {
+        const response = await fetch('/companion/message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf },
+            body: JSON.stringify({ message: text, history: companionHistory.slice(-8) }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || 'تعذر الاتصال برفيق أمان.');
+        setCompanionState('writing');
+        addMessage(data.reply, 'bot');
+        companionHistory.push({ role: 'user', content: text }, { role: 'assistant', content: data.reply });
+    } catch (error) {
+        addMessage(error.message || 'تعذر الاتصال برفيق أمان الآن. حاول مرة أخرى.', 'bot');
+    } finally {
+        chatSending = false;
+        chatSubmit.disabled = false;
+        setCompanionState('listening');
+        input.focus();
+    }
 };
 q('.menu-btn').onclick = event => {
     const nav = q('.mobile-nav'); nav.classList.toggle('open');
