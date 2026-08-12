@@ -59,7 +59,15 @@
 <section class="booking-call" id="bookingCall"
     data-signals-url="{{ route('bookings.call.signals', $booking) }}"
     data-send-url="{{ route('bookings.call.signals.store', $booking) }}"
-    data-csrf="{{ csrf_token() }}" data-peer-name="{{ $otherName }}" data-booking-id="{{ $booking->id }}" hidden>
+    data-csrf="{{ csrf_token() }}" data-peer-name="{{ $otherName }}" data-booking-id="{{ $booking->id }}"
+    data-ice-servers='@json(array_values(array_filter([
+        ['urls' => config('services.webrtc.stun_url')],
+        config('services.webrtc.turn_url') ? [
+            'urls' => config('services.webrtc.turn_url'),
+            'username' => config('services.webrtc.turn_username'),
+            'credential' => config('services.webrtc.turn_credential'),
+        ] : null,
+    ])))' hidden>
     <div class="booking-call-stage">
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay playsinline muted></video>

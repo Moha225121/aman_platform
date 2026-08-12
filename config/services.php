@@ -49,4 +49,11 @@ return [
         'private_key' => env('VAPID_PRIVATE_KEY'),
     ],
 
+    'webrtc' => [
+        'stun_url' => env('WEBRTC_STUN_URL', 'stun:stun.l.google.com:19302'),
+        'turn_url' => env('WEBRTC_TURN_URL'),
+        'turn_username' => env('WEBRTC_TURN_USERNAME'),
+        'turn_credential' => env('WEBRTC_TURN_CREDENTIAL'),
+    ],
+
 ];
