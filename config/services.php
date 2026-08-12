@@ -43,4 +43,10 @@ return [
 
     'pdf_python' => env('PDF_PYTHON_BINARY', 'python'),
 
+    'webpush' => [
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@aman.local'),
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+    ],
+
 ];

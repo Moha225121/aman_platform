@@ -104,4 +104,21 @@ class BookingChatTest extends TestCase
             'type' => 'invite',
         ])->assertForbidden();
     }
+
+    public function test_authenticated_user_can_register_a_push_subscription(): void
+    {
+        $user = User::factory()->create();
+        $endpoint = 'https://push.example.test/subscription/123';
+
+        $this->actingAs($user)->postJson(route('push.subscriptions.store'), [
+            'endpoint' => $endpoint,
+            'keys' => ['p256dh' => 'public-key', 'auth' => 'auth-token'],
+            'contentEncoding' => 'aes128gcm',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('push_subscriptions', [
+            'user_id' => $user->id,
+            'endpoint_hash' => hash('sha256', $endpoint),
+        ]);
+    }
 }

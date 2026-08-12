@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Booking, CallSignal};
+use App\Services\CallPushService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -49,6 +50,10 @@ class BookingCallController extends Controller
             'payload' => $data['payload'] ?? [],
             'created_at' => now(),
         ]);
+
+        if ($data['type'] === 'invite') {
+            app(CallPushService::class)->sendIncomingCall($booking->loadMissing('counselor'), $request->user());
+        }
 
         return response()->json(['id' => $signal->id], 201);
     }

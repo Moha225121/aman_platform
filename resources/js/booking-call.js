@@ -87,6 +87,7 @@ if (root) {
         waiting.hidden = false;
         answerControls.hidden = true;
         startButton.disabled = false;
+        navigator.serviceWorker?.controller?.postMessage({type: 'close-call-notification', bookingId: root.dataset.bookingId});
     };
 
     const beginCall = async () => {
@@ -161,6 +162,7 @@ if (root) {
             status.textContent = 'يتم إنشاء اتصال مباشر ومشفر…';
             await openMedia();
             await sendSignal('accept');
+            navigator.serviceWorker?.controller?.postMessage({type: 'close-call-notification', bookingId: root.dataset.bookingId});
         } catch (error) { showFailure(error); }
     });
     $('declineCall').addEventListener('click', () => { sendSignal('decline').catch(() => {}); closeCall(false); });

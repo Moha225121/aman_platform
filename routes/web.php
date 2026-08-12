@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{AdminController,AuthController,BookingCallController,BookingController,BookingChatController,CompanionController,CounselorController};
+use App\Http\Controllers\{AdminController,AuthController,BookingCallController,BookingController,BookingChatController,CompanionController,CounselorController,PushSubscriptionController};
 use App\Models\{Counselor,Service,SupportProgram};
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/{booking}/call/signals',[BookingCallController::class,'signals'])->name('bookings.call.signals');
     Route::post('/bookings/{booking}/call/signals',[BookingCallController::class,'store'])->middleware('throttle:180,1')->name('bookings.call.signals.store');
     Route::get('/chat/notifications',[BookingChatController::class,'notifications'])->name('chat.notifications');
+    Route::get('/push/config',[PushSubscriptionController::class,'config'])->name('push.config');
+    Route::post('/push/subscriptions',[PushSubscriptionController::class,'store'])->name('push.subscriptions.store');
 });
 Route::post('/companion/message',[CompanionController::class,'message'])->middleware(['auth','throttle:20,1'])->name('companion.message');
 Route::get('/counselor',[CounselorController::class,'dashboard'])->middleware('auth')->name('counselor.dashboard');

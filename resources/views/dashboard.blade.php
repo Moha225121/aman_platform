@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>مساحتي — أمان</title>
-    @vite(['resources/css/app.css', 'resources/js/chat-notifications.js'])
+    @vite(['resources/css/app.css', 'resources/js/chat-notifications.js', 'resources/js/push-notifications.js'])
 </head>
 <body class="user-dashboard">
 @php

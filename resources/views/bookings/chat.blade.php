@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>محادثة الجلسة — أمان</title>
-    @vite(['resources/css/app.css', 'resources/js/booking-call.js'])
+    @vite(['resources/css/app.css', 'resources/js/booking-call.js', 'resources/js/push-notifications.js'])
 </head>
 <body class="booking-chat-page">
 @php
@@ -59,7 +59,7 @@
 <section class="booking-call" id="bookingCall"
     data-signals-url="{{ route('bookings.call.signals', $booking) }}"
     data-send-url="{{ route('bookings.call.signals.store', $booking) }}"
-    data-csrf="{{ csrf_token() }}" data-peer-name="{{ $otherName }}" hidden>
+    data-csrf="{{ csrf_token() }}" data-peer-name="{{ $otherName }}" data-booking-id="{{ $booking->id }}" hidden>
     <div class="booking-call-stage">
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay playsinline muted></video>
