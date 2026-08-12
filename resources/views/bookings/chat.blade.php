@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>محادثة الجلسة — أمان</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/booking-call.js'])
 </head>
 <body class="booking-chat-page">
 @php
@@ -24,6 +24,9 @@
             <span class="booking-chat-avatar">{{ mb_substr($otherName, 0, 1) }}</span>
             <div><h1>{{ $otherName }}</h1><small><i></i> <span id="connectionStatus">متصل وآمن</span></small></div>
         </div>
+        @if($booking->session_method === 'online')
+            <button class="booking-call-start" id="startCall" type="button" title="بدء مكالمة فيديو مشفرة" aria-label="بدء مكالمة فيديو">◉ <span>مكالمة</span></button>
+        @endif
         <div class="booking-chat-reference"><span>رقم الحجز</span><b>#{{ $booking->id }}</b></div>
     </header>
 
@@ -52,6 +55,32 @@
         <small class="booking-chat-security">🔒 رسائلك مرتبطة برقم الحجز ولا تظهر خارج هذه الجلسة.</small>
     </section>
 </main>
+@if($booking->session_method === 'online')
+<section class="booking-call" id="bookingCall"
+    data-signals-url="{{ route('bookings.call.signals', $booking) }}"
+    data-send-url="{{ route('bookings.call.signals.store', $booking) }}"
+    data-csrf="{{ csrf_token() }}" data-peer-name="{{ $otherName }}" hidden>
+    <div class="booking-call-stage">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <video id="localVideo" autoplay playsinline muted></video>
+        <div class="booking-call-waiting" id="callWaiting">
+            <span class="booking-call-avatar">{{ mb_substr($otherName, 0, 1) }}</span>
+            <h2 id="callTitle">جاري الاتصال بـ {{ $otherName }}</h2>
+            <p id="callStatus">يتم إنشاء اتصال مباشر ومشفر…</p>
+            <div class="booking-call-answer" id="callAnswer" hidden>
+                <button type="button" id="acceptCall">قبول</button>
+                <button type="button" id="declineCall">رفض</button>
+            </div>
+        </div>
+        <div class="booking-call-info"><b>{{ $otherName }}</b><span>🔒 مكالمة WebRTC مشفرة</span></div>
+        <div class="booking-call-controls">
+            <button type="button" id="toggleMic" aria-label="كتم الميكروفون" title="الميكروفون">🎙</button>
+            <button type="button" id="toggleCamera" aria-label="إيقاف الكاميرا" title="الكاميرا">📹</button>
+            <button type="button" id="endCall" class="end" aria-label="إنهاء المكالمة" title="إنهاء المكالمة">☎</button>
+        </div>
+    </div>
+</section>
+@endif
 <script>
 const box=document.getElementById('chatMessages'),form=document.getElementById('chatForm'),error=document.getElementById('chatError'),connection=document.getElementById('connectionStatus'),counter=document.getElementById('characterCount');
 const messagesUrl=@json(route('bookings.messages',$booking)),sendUrl=@json(route('bookings.messages.store',$booking));let lastSignature='';

@@ -141,12 +141,17 @@ function guidanceFor(text){const value=text.trim().toLowerCase();
  if(/حجز|استشارة|مرشد/.test(value))return 'يمكنك اختيار المرشد أو نوع الاستشارة من لوحة أمان، ثم إرسال الطلب دون اسم حقيقي أو رقم هاتف. بعد الجلسة الأولى سيقترح المختص وتيرة المتابعة المناسبة.';
  return 'شكرًا لمشاركتك. ساعدني على إرشادك بشكل أفضل: هل يتعلق ما تمر به بالقلق، المزاج، النوم، الأسرة، أم أنك تريد متابعة جلساتك؟';}
 const companionHistory=[];
+let companionSending=false;
 async function companionReply(text){
+ if(companionSending)return;
+ companionSending=true;
+ companionPanel.querySelector('.companion-form button').disabled=true;
  companionMessage(text);const emergency=/انتحار|أقتل نفسي|اقتل نفسي|إيذاء نفسي|ايذاء نفسي|خطر فوري/.test(text.toLowerCase());
- if(emergency){companionMessage(guidanceFor(text),'bot');return}
+ if(emergency){companionMessage(guidanceFor(text),'bot');companionSending=false;companionPanel.querySelector('.companion-form button').disabled=false;return}
  const typing=companionMessage('رفيق أمان يبحث في قاعدة المعرفة...','bot');typing.classList.add('typing');
  try{const response=await fetch('/companion/message',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify({message:text,history:companionHistory.slice(-8)})});const data=await response.json();typing.remove();if(!response.ok)throw new Error(data.message||'تعذر الاتصال');companionMessage(data.reply,'bot');companionHistory.push({role:'user',content:text},{role:'assistant',content:data.reply});}
  catch(error){typing.remove();companionMessage(`${guidanceFor(text)}\n\nتعذر الاتصال بالذكاء الاصطناعي الآن، لذلك عُرض إرشاد أمان المحلي.`,'bot')}
+ finally{companionSending=false;companionPanel.querySelector('.companion-form button').disabled=false}
 }
 companionPanel.querySelectorAll('.companion-suggestions button').forEach(b=>b.onclick=()=>companionReply(b.textContent));
 companionPanel.querySelector('.companion-form').onsubmit=e=>{e.preventDefault();const input=e.currentTarget.querySelector('input');if(!input.value.trim())return;companionReply(input.value.trim());input.value=''};
