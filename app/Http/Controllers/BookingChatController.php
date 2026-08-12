@@ -50,7 +50,7 @@ class BookingChatController extends Controller
         $bookings = $query->withCount(['messages as unread_messages_count' => fn ($messages) => $messages
             ->where('sender_id', '!=', $user->id)
             ->whereNull('read_at')
-        ])->get(['id']);
+        ])->get(['id', 'session_method']);
 
         $latestUnread = \App\Models\BookingMessage::query()
             ->whereIn('booking_id', $bookings->pluck('id'))
@@ -62,6 +62,7 @@ class BookingChatController extends Controller
         return response()->json([
             'total' => $bookings->sum('unread_messages_count'),
             'bookings' => $bookings->mapWithKeys(fn ($booking) => [$booking->id => $booking->unread_messages_count]),
+            'online_bookings' => $bookings->where('session_method', 'online')->pluck('id')->values(),
             'latest' => $latestUnread ? [
                 'id' => $latestUnread->id,
                 'booking_id' => $latestUnread->booking_id,

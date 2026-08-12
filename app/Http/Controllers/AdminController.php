@@ -8,19 +8,24 @@ class AdminController extends Controller
     private function authorizeAdmin(): void { abort_unless(auth()->user()?->role === 'admin', 403); }
 
     public function index(){ $this->authorizeAdmin(); return view('admin.dashboard',['users'=>User::where('role','user')->latest()->get(),'bookings'=>Booking::with(['user','counselor'])->latest()->get(),'services'=>Service::all(),'programs'=>SupportProgram::all(),'counselors'=>Counselor::with('user')->latest()->get()]);}
-    public function booking(Request $request,Booking $booking){
+    public function booking(Request $request, Booking $booking)
+    {
         $this->authorizeAdmin();
-        $data=$request->validate([
-            'status'=>'required|in:pending,accepted,completed,cancelled','scheduled_at'=>'nullable|date',
-            'counselor_id'=>'nullable|exists:counselors,id',
-            'meeting_url'=>['nullable','url:http,https','max:1000','regex:#^https://meet\.google\.com/[a-z0-9-]+(?:\?.*)?$#i'],
-            'location_url'=>['nullable','url:http,https','max:1000'],
+        $data = $request->validate([
+            'status' => 'required|in:pending,accepted,completed,cancelled',
+            'scheduled_at' => 'nullable|date',
+            'counselor_id' => 'nullable|exists:counselors,id',
+            'location_url' => ['nullable', 'url:http,https', 'max:1000'],
         ]);
-        if($data['status']==='accepted' && empty($data['counselor_id'])) throw \Illuminate\Validation\ValidationException::withMessages(['counselor_id'=>'اختر المرشد قبل تأكيد الحجز لفتح المحادثة للطرفين.']);
-        if($data['status']==='accepted' && $booking->session_method==='online' && empty($data['meeting_url'])) throw \Illuminate\Validation\ValidationException::withMessages(['meeting_url'=>'أضف رابط Google Meet قبل تأكيد الحجز الأونلاين.']);
-        if($data['status']==='accepted' && $booking->session_method==='in_person' && empty($data['location_url'])) throw \Illuminate\Validation\ValidationException::withMessages(['location_url'=>'أضف رابط موقع الجلسة قبل تأكيد الحجز الحضوري.']);
-        if($booking->session_method==='online')$data['location_url']=null;else $data['meeting_url']=null;
-        $booking->update($data);return back()->with('success','تم تحديث الحجز والموعد ورابط الجلسة.');
+        if ($data['status'] === 'accepted' && empty($data['counselor_id'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['counselor_id' => 'اختر المرشد قبل تأكيد الحجز لفتح المحادثة للطرفين.']);
+        }
+        if ($data['status'] === 'accepted' && $booking->session_method === 'in_person' && empty($data['location_url'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['location_url' => 'أضف رابط موقع الجلسة قبل تأكيد الحجز الحضوري.']);
+        }
+        if ($booking->session_method === 'online') $data['location_url'] = null;
+        $booking->update($data);
+        return back()->with('success', 'تم تحديث الحجز والموعد.');
     }
 
     public function storeCounselor(Request $request)

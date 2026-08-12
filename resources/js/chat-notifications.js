@@ -1,4 +1,14 @@
 const chatLinks = [...document.querySelectorAll('[data-chat-booking]')];
+document.querySelectorAll('.booking-links').forEach(group => {
+    const chatLink = group.querySelector('.chat-session-link');
+    const meetLink = [...group.querySelectorAll('a')].find(link => /meet\.google\.com/i.test(link.href));
+    if (!chatLink || !meetLink) return;
+    meetLink.href = chatLink.href;
+    meetLink.removeAttribute('target');
+    meetLink.removeAttribute('rel');
+    meetLink.textContent = 'بدء المكالمة المشفرة ◉';
+    meetLink.classList.add('encrypted-call-link');
+});
 
 if (chatLinks.length) {
     const originalTitle = document.title;
@@ -81,6 +91,17 @@ if (chatLinks.length) {
             const response = await fetch('/chat/notifications', { headers: { Accept: 'application/json' } });
             if (!response.ok) return;
             const data = await response.json();
+            const onlineBookings = new Set((data.online_bookings || []).map(String));
+            chatLinks.forEach(chatLink => {
+                if (!onlineBookings.has(String(chatLink.dataset.chatBooking))) return;
+                const group = chatLink.closest('.booking-links');
+                if (!group || group.querySelector('.encrypted-call-link')) return;
+                const callLink = document.createElement('a');
+                callLink.className = 'session-link encrypted-call-link';
+                callLink.href = chatLink.href;
+                callLink.textContent = 'بدء المكالمة المشفرة ◉';
+                group.append(callLink);
+            });
             updateBadges(data);
             if (initialized && data.total > previousTotal && data.latest?.id !== latestMessageId) showNotification(data);
             previousTotal = data.total;

@@ -53,6 +53,7 @@ class BookingChatTest extends TestCase
             ->assertOk()
             ->assertJsonPath('total', 1)
             ->assertJsonPath("bookings.{$booking->id}", 1)
+            ->assertJsonPath('online_bookings.0', $booking->id)
             ->assertJsonPath('latest.id', $message->id)
             ->assertJsonPath('latest.preview', 'New message');
 

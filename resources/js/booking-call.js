@@ -167,11 +167,11 @@ if (root) {
     $('endCall').addEventListener('click', () => closeCall(true));
     $('toggleMic').addEventListener('click', event => {
         const track = localStream?.getAudioTracks()[0];
-        if (track) { track.enabled = !track.enabled; event.currentTarget.classList.toggle('off', !track.enabled); }
+        if (track) { track.enabled = !track.enabled; event.currentTarget.classList.toggle('off', !track.enabled); event.currentTarget.setAttribute('aria-pressed', String(!track.enabled)); event.currentTarget.title = track.enabled ? 'كتم الميكروفون' : 'تشغيل الميكروفون'; }
     });
     $('toggleCamera').addEventListener('click', event => {
         const track = localStream?.getVideoTracks()[0];
-        if (track) { track.enabled = !track.enabled; event.currentTarget.classList.toggle('off', !track.enabled); }
+        if (track) { track.enabled = !track.enabled; event.currentTarget.classList.toggle('off', !track.enabled); event.currentTarget.setAttribute('aria-pressed', String(!track.enabled)); event.currentTarget.title = track.enabled ? 'إيقاف الكاميرا' : 'تشغيل الكاميرا'; }
     });
     window.addEventListener('beforeunload', () => active && fetch(root.dataset.sendUrl, {
         method: 'POST', keepalive: true,

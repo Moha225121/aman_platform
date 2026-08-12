@@ -74,9 +74,9 @@
         </div>
         <div class="booking-call-info"><b>{{ $otherName }}</b><span>🔒 مكالمة WebRTC مشفرة</span></div>
         <div class="booking-call-controls">
-            <button type="button" id="toggleMic" aria-label="كتم الميكروفون" title="الميكروفون">🎙</button>
-            <button type="button" id="toggleCamera" aria-label="إيقاف الكاميرا" title="الكاميرا">📹</button>
-            <button type="button" id="endCall" class="end" aria-label="إنهاء المكالمة" title="إنهاء المكالمة">☎</button>
+            <button type="button" id="toggleMic" aria-label="كتم الميكروفون" title="كتم الميكروفون" aria-pressed="false"><svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11v1a7 7 0 0 1-14 0v-1M12 19v3M8 22h8"/></svg><svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V6a3 3 0 0 0-5.6-1.5M17.8 17.8A7 7 0 0 1 5 12v-1M19 11v1c0 1-.2 1.9-.6 2.8M12 19v3M8 22h8"/></svg><span>الميكروفون</span></button>
+            <button type="button" id="toggleCamera" aria-label="إيقاف الكاميرا" title="إيقاف الكاميرا" aria-pressed="false"><svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg><svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h11V11.4M16 10l5-3v10l-2.2-1.3"/></svg><span>الكاميرا</span></button>
+            <button type="button" id="endCall" class="end" aria-label="إنهاء المكالمة" title="إنهاء المكالمة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 15.5 3.5 14a2 2 0 0 1 .2-3.2 14 14 0 0 1 16.6 0 2 2 0 0 1 .2 3.2l-1.7 1.5a2 2 0 0 1-2.8-.2l-1.2-1.5a9.5 9.5 0 0 0-5.6 0L8 15.3a2 2 0 0 1-2.8.2Z"/></svg><span>إنهاء</span></button>
         </div>
     </div>
 </section>
