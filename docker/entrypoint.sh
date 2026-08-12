@@ -30,6 +30,22 @@ if [ -n "${APP_URL:-}" ]; then
     APP_URL="$(printf '%s' "$APP_URL" | tr -d '\r\n\t')"
     export APP_URL
 fi
+
+# Normalize WebRTC server values copied from provider dashboards. Textarea
+# fields may include whitespace/newlines, which makes an otherwise valid ICE
+# URL fail browser validation.
+if [ -n "${WEBRTC_STUN_URL:-}" ]; then
+    WEBRTC_STUN_URL="$(printf '%s' "$WEBRTC_STUN_URL" | tr -d '\r\n\t ' )"
+    export WEBRTC_STUN_URL
+fi
+if [ -n "${WEBRTC_TURN_URL:-}" ]; then
+    WEBRTC_TURN_URL="$(printf '%s' "$WEBRTC_TURN_URL" | tr -d '\r\n\t ' )"
+    case "$WEBRTC_TURN_URL" in
+        turn:*|turns:*) ;;
+        *) WEBRTC_TURN_URL="turn:$WEBRTC_TURN_URL" ;;
+    esac
+    export WEBRTC_TURN_URL
+fi
 if [ -n "${DATABASE_URL:-}" ]; then
     DATABASE_URL="$(printf '%s' "$DATABASE_URL" | tr -d '\r\n\t')"
     export DATABASE_URL

@@ -7,9 +7,24 @@ if (root) {
     let peer = null, localStream = null, lastSignalId = 0, active = false, caller = false, polling = false;
     let pendingCandidates = [];
     const iceServers = (() => {
-        try { return JSON.parse(root.dataset.iceServers || '[]'); }
+        try {
+            return JSON.parse(root.dataset.iceServers || '[]').map(server => {
+                let urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+                urls = urls.filter(Boolean).map(url => {
+                    url = String(url).trim().replace(/\s+/g, '');
+                    if (server.username && !/^turns?:/i.test(url)) url = `turn:${url}`;
+                    return url;
+                });
+                return {...server, urls: Array.isArray(server.urls) ? urls : urls[0]};
+            }).filter(server => server.urls && (!Array.isArray(server.urls) || server.urls.length));
+        }
         catch { return [{urls: 'stun:stun.l.google.com:19302'}]; }
     })();
+
+    const hasTurnServer = () => iceServers.some(server => {
+        const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+        return urls.some(url => /^turns?:/i.test(String(url)));
+    });
 
     const sendSignal = async (type, payload = {}) => {
         const response = await fetch(root.dataset.sendUrl, {method: 'POST', headers: {
@@ -47,8 +62,8 @@ if (root) {
             status.textContent = 'الكاميرا أو الميكروفون مستخدمان في تطبيق آخر. أغلقه ثم أعد المحاولة.';
         else if (error?.name === 'SecurityError')
             status.textContent = 'تشغيل الكاميرا والميكروفون يتطلب فتح الموقع عبر HTTPS آمن.';
-        else if (!iceServers.some(server => String(server.urls).startsWith('turn')))
-            status.textContent = 'تعذر إنشاء الاتصال بين الشبكتين. يجب إعداد خادم TURN للمكالمات الخارجية.';
+        else if (!hasTurnServer())
+            status.textContent = 'إعداد خادم TURN لم يصل إلى التطبيق. احفظ متغيرات البيئة ثم أعد نشر الخدمة.';
         else status.textContent = 'تعذر الاتصال بالطرف الآخر. تحقق من الشبكة ثم حاول مرة أخرى.';
     };
 
