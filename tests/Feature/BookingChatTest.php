@@ -65,4 +65,42 @@ class BookingChatTest extends TestCase
             ->assertJsonPath("bookings.{$booking->id}", 0)
             ->assertJsonPath('latest', null);
     }
+
+    public function test_only_online_booking_participants_can_exchange_call_signals(): void
+    {
+        $client = User::factory()->create(['role' => 'user']);
+        $counselorUser = User::factory()->create(['role' => 'counselor']);
+        $outsider = User::factory()->create(['role' => 'user']);
+        $counselor = Counselor::create([
+            'user_id' => $counselorUser->id,
+            'name' => 'Call counselor',
+            'title' => 'Counselor',
+            'rating' => 5,
+        ]);
+        $booking = Booking::create([
+            'user_id' => $client->id,
+            'counselor_id' => $counselor->id,
+            'status' => 'accepted',
+            'session_method' => 'online',
+        ]);
+
+        $this->actingAs($client)->postJson(route('bookings.call.signals.store', $booking), [
+            'type' => 'offer',
+            'payload' => ['description' => ['type' => 'offer', 'sdp' => 'test-sdp']],
+        ])->assertCreated();
+
+        $this->actingAs($counselorUser)->getJson(route('bookings.call.signals', $booking))
+            ->assertOk()
+            ->assertJsonPath('signals.0.type', 'offer')
+            ->assertJsonPath('signals.0.payload.description.sdp', 'test-sdp');
+
+        $this->actingAs($client)->getJson(route('bookings.call.signals', $booking))
+            ->assertOk()->assertJsonCount(0, 'signals');
+        $this->actingAs($outsider)->getJson(route('bookings.call.signals', $booking))->assertForbidden();
+
+        $booking->update(['session_method' => 'in_person']);
+        $this->actingAs($client)->postJson(route('bookings.call.signals.store', $booking), [
+            'type' => 'invite',
+        ])->assertForbidden();
+    }
 }

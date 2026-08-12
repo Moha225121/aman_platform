@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{AdminController,AuthController,BookingController,BookingChatController,CompanionController,CounselorController};
+use App\Http\Controllers\{AdminController,AuthController,BookingCallController,BookingController,BookingChatController,CompanionController,CounselorController};
 use App\Models\{Counselor,Service,SupportProgram};
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/{booking}/chat',[BookingChatController::class,'show'])->name('bookings.chat');
     Route::get('/bookings/{booking}/messages',[BookingChatController::class,'messages'])->name('bookings.messages');
     Route::post('/bookings/{booking}/messages',[BookingChatController::class,'store'])->middleware('throttle:30,1')->name('bookings.messages.store');
+    Route::get('/bookings/{booking}/call/signals',[BookingCallController::class,'signals'])->name('bookings.call.signals');
+    Route::post('/bookings/{booking}/call/signals',[BookingCallController::class,'store'])->middleware('throttle:180,1')->name('bookings.call.signals.store');
     Route::get('/chat/notifications',[BookingChatController::class,'notifications'])->name('chat.notifications');
 });
 Route::post('/companion/message',[CompanionController::class,'message'])->middleware(['auth','throttle:20,1'])->name('companion.message');
